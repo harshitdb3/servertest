@@ -32,18 +32,18 @@ async function run() {
     await collection.drop().catch(() => {});
     const result = await collection.insertMany(data);
     console.log(`${result.insertedCount} documents were inserted into the collection`);
-  } finally {
+  } catch (err) {
+
+    console.log(err.stack);
  
   }
 }
-run().catch(console.dir);
 
  
 // For backend and express
 const express = require('express');
 const app = express();
 const cors = require("cors");
-console.log("App listen at port 5000");
 app.use(express.json());
 app.use(cors({
   origin: [
@@ -59,7 +59,8 @@ app.get("/", (req, resp) => {
  
 app.get("/getdata", async (req, res) => {
     try {
-
+        
+    // Send a ping to confirm a successful connection
         //get data collection from mongodb
         const collection = client.db("test").collection("data");
         const result = await collection.find({}).toArray();
@@ -72,4 +73,7 @@ app.get("/getdata", async (req, res) => {
         res.send("Something Went Wrong");
     }
 });
-app.listen(PORT);
+
+run().catch(console.dir).finally(() => app.listen(PORT,()=>{console
+  .log(`Server is running on port ${PORT}`);
+}) );
