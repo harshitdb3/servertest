@@ -6,6 +6,9 @@ const PORT = process.env.PORT;
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = process.env.MONGO_URI;
+
+console.log("Connecting to MongoDB..." + uri);
+console.log("Connecting to express..." + PORT);
 const data = require("./jsondata.json");
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
