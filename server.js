@@ -27,15 +27,23 @@ async function run() {
     // Send a ping to confirm a successful connection
     await client.db("test").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } catch (err) {
+
+    console.log(err.stack);
+ 
+  }
+}
+
+//insert data to mongodb
+async function insertData() {
+  try {
     const collection = client.db("test").collection("data");
     // Drop the collection if it exists
     await collection.drop().catch(() => {});
     const result = await collection.insertMany(data);
     console.log(`${result.insertedCount} documents were inserted into the collection`);
   } catch (err) {
-
     console.log(err.stack);
- 
   }
 }
 
@@ -60,9 +68,17 @@ app.get("/", (req, resp) => {
 app.get("/getdata", async (req, res) => {
     try {
         
-    // Send a ping to confirm a successful connection
+        // Send a ping to confirm a successful connection
         //get data collection from mongodb
         const collection = client.db("test").collection("data");
+
+        //if collection is empty then insert data
+        const count = await collection.countDocuments();
+        if (count === 0) {
+            await insertData();
+        }
+
+        //get data from mongodb
         const result = await collection.find({}).toArray();
         
         //send data to frontend
